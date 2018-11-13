@@ -139,15 +139,37 @@ status Parenthesis_match (sqstack_t * s, char *str)
 
 int main (int argc, char **argv)
 {
-    char str[100], enter;
+    FILE *fp = NULL;
+    int temp_len = 0;
+
+    char str[BUFSIZ] = {0};
     sqstack_t s;
 
     Init (&s);
+
+#if 1
+    if ((fp = fopen("rule.txt", "r")) == NULL) {
+        fprintf(stderr, "open error!\n");
+        return -1;
+    }
+
+    if (fread (str, sizeof(str) - 1, 1, fp) != 1) {
+        fprintf(stderr, "read error!\n");
+        return -1;
+    }
+
+#else 
     printf ("请输入字符串:\n");
     scanf ("%s", str);
     scanf ("%c", &enter);
+#endif
 
     Parenthesis_match (&s, str);
 
-    return 0;
+out:
+    if (fp) {
+        fclose(fp);
+    }
+
+    return -1;
 }
