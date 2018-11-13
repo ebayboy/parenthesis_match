@@ -94,7 +94,7 @@ status clearstack (sqstack_t * s)
 }
 
 //括号匹配算法
-status Parenthesis_match (sqstack_t * s, char *str)
+status Parenthesis_match (sqstack_t * s, unsigned char *str)
 {
     int i = 0, flag = 0;
     selement_t *e;
@@ -122,7 +122,7 @@ status Parenthesis_match (sqstack_t * s, char *str)
                     } else {
                         char buff[BUFSIZ] = {0};
                         memcpy(buff, e->pos_s, e->pos_e - e->pos_s + 1);
-                        fprintf(stderr, "buff:[%s]\n", buff);
+                        fprintf(stderr, "star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
                     }
                 }
                 break;
