@@ -170,16 +170,21 @@ static int waf_hit_result_find(waf_hit_t hits[10], int rule_id)
     return -1;
 }
 
-/* @exp: (30004 & 30005 | !30006) */
+#if 0
+/* @exp: 30004 & 30005 | !30006 */
 static int waf_parse_exp(unsigned char *exp_in, size_t inlen, unsigned char *exp_out, size_t outlen)
 {
-    unsigned char *s, *e, *pos;
+    unsigned char *start, *end, *pos;
     int i;
+    char buf[BUFSIZ] = {0};
+    char *opr;
+    int rule_id1 = 0, rule_id2 = 0;
 
     if (exp_in == NULL || exp_out == NULL) {
         return -1;
     }
 
+    /* TODO */
     pos = exp_in;
     for (i = 0; i < inlen; i++) {
         if (pos[i] == ' ' || pos[i] == '(' || pos[i] == ')') {
@@ -188,15 +193,16 @@ static int waf_parse_exp(unsigned char *exp_in, size_t inlen, unsigned char *exp
 
         if (pos[i] == '&' || pos[i] == '|' || pos[i] == '!') {
             /* operator */
+            opr = pos + i;
         }
 
+        start = pos + i;
         /* rule_id */
-         
     }
-
 
     return 0;
 }
+#endif
 
 /** 
  * buf:[30002 & (30003 | (30004 & 30005 | !30006) | 30006) | (30005 & 3006))] len:[70]
