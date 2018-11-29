@@ -6,7 +6,7 @@
 
 #include "common.h"
 #include "parenthesis.h"
-
+#include "exp_parser.h"
 
 int parenthesis_init(sqstack_t * s)
 {
