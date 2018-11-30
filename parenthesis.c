@@ -108,11 +108,9 @@ int parenthesis_match (sqstack_t * s, unsigned char *str)
                     } else {
                         char buff[BUFSIZ] = {0};
                         memcpy(buff, e->pos_s, e->pos_e - e->pos_s + 1);
-                        fprintf(stderr, "star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
+                        fprintf(stderr, "before star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
                         calculate_exp_result(e->pos_s + 1, e->pos_e - e->pos_s - 1);
-
-                        /* TODO: for test */
-                        return OK;
+                        fprintf(stderr, "after star-end: %d-%d buff:[%s]\n\n", e->pos_s - str, e->pos_e - str, buff);
                     }
                 }
                 break;
