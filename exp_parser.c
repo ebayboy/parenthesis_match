@@ -144,6 +144,7 @@ static  int process_and_or_opr(char *data, int dlen)
         return -1;
     }
 
+    fprintf(stderr, "%s:%d before repalce:[%.*s]\n", __func__, __LINE__, dlen, data);
     start = data;
     for (i = 0; i < dlen && (start < data + dlen); i++) {
         /* get opr */
@@ -152,19 +153,16 @@ static  int process_and_or_opr(char *data, int dlen)
             /* 表达式可能是: [30002 ] 或 [      0 ] 或 [ 30004 ] 或 [      1] */
             get_and_or_opr_len(start, dlen - i, &out, &olen);
 
-
-            fprintf(stderr, "%s:%d before repalce:[%s]\n", __func__, __LINE__,  data);
-            fprintf(stderr, "out [%s] olen:[%d]\n", out, olen);
+            //fprintf(stderr, "out [%s] olen:[%d]\n", out, olen);
             /* olen == 1 : [      1] */
             if (olen > 1) {
                 replace_result(out, olen, start, 0, out - start);
             }
 
-            fprintf(stderr, "%s:%d after repalce:[%s] len:[%d]\n\n", __func__, __LINE__, data, strlen(data));
-
             start = pos + i + 1;
         }
     }
+    fprintf(stderr, "%s:%d after repalce:[%.*s]\n", __func__, __LINE__, dlen, data);
 
     return 0;
 }
@@ -185,7 +183,7 @@ static int process_not_opr(char *data, int dlen)
         return -1;
     }
 
-    fprintf(stderr, "%s:%d data:[%s] dlen:[%d]\n", __func__, __LINE__, data, dlen);
+    fprintf(stderr, "%s:%d data:[%.*s] dlen:[%d]\n", __func__, __LINE__, dlen, data, dlen);
 
     /* calculate ! */
     for (i = 0; i < dlen; i++) {
@@ -207,9 +205,9 @@ static int process_not_opr(char *data, int dlen)
         out = NULL;
         olen = get_not_opr_len(start, dlen - i, &out);
         if (olen > 0) {
-            printf("before data:[%s]\n", data);
+            printf("before data:[%.*s]\n", dlen, data);
             replace_result(out, olen, start, 1, out - start);
-            printf("after  data:[%s]\n", data);
+            printf("after  data:[%.*s]\n", dlen, data);
         }
     }
 
@@ -316,10 +314,10 @@ static int process_and_or_opt_result(char *data, int dlen)
 int exp_parser_parse(char *data, int dlen)
 {
     /* process not opr */
-    process_not_opr(data, strlen(data));
+    process_not_opr(data, dlen);
 
     /* process 'and opr' && 'or opt' */
-    process_and_or_opr(data, strlen(data));
+    process_and_or_opr(data, dlen);
 
     process_and_or_opt_result(data, dlen);
 

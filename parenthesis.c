@@ -73,9 +73,9 @@ int clearstack (sqstack_t * s)
 }
 
 /* TODO ?  */
-static int calculate_exp_result(unsigned char *buf, size_t buflen)
+static int calculate_exp_result(unsigned char *start, size_t slen)
 {
-
+    exp_parser_parse(start, slen);
     return 0;
 }
 
@@ -109,6 +109,10 @@ int parenthesis_match (sqstack_t * s, unsigned char *str)
                         char buff[BUFSIZ] = {0};
                         memcpy(buff, e->pos_s, e->pos_e - e->pos_s + 1);
                         fprintf(stderr, "star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
+                        calculate_exp_result(e->pos_s + 1, e->pos_e - e->pos_s - 1);
+
+                        /* TODO: for test */
+                        return OK;
                     }
                 }
                 break;
