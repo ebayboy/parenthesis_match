@@ -83,20 +83,24 @@ static int get_not_opr_len(char *in, int ilen, char **out)
     return olen;
 }
 
-static int get_result_by_rule(const char *rule_id, int len)
+static int get_result_by_rule(int rule_id, int *rule_ids, int *rule_hits, size_t rule_size)
 {
-    char rule_str[BUFSIZ] = {0};
-    int id = 0;
+    int i;
 
-    memcpy(rule_str, rule_id, len);
+    for (i = 0; i< rule_size; i++) {
+        if (rule_ids[i] == rule_id) {
+            return rule_hits[i];
+        }
+    }
 
-    id = atoi(rule_str) % 2;
-
-    return id;
+    return 0;
 }
 
 /* 将源字符串替换成结果字符串 */
-static int replace_result(char *in, int ilen, char *start, int is_not, int offset)
+static int replace_result(
+        char *in, int ilen, 
+        char *start, int is_not, int offset,
+        int *rule_ids, int *rule_hits, size_t rule_size)
 {
     char *mmb = NULL;
     char mmb_id[64] = {0};
@@ -112,7 +116,7 @@ static int replace_result(char *in, int ilen, char *start, int is_not, int offse
     memset(mmb, 0, sizeof(mmb));
     memcpy(mmb, in, ilen);
 
-    rule_result = get_result_by_rule(mmb, ilen);
+    rule_result = get_result_by_rule(atoi(mmb), rule_ids, rule_hits, rule_size);
 
     if (is_not) {
         /* start = !30002 */
@@ -132,7 +136,7 @@ static int replace_result(char *in, int ilen, char *start, int is_not, int offse
 }
 
 /* @data: "30002 &      0 | 30004 & 30005 |      1" */
-static  int process_and_or_opr(char *data, int dlen)
+static  int process_and_or_opr(char *data, int dlen, int *rule_ids, int *rule_hits, size_t rule_size)
 {
     int i, olen = 0;
     char *pos = data;
@@ -156,7 +160,7 @@ static  int process_and_or_opr(char *data, int dlen)
             //fprintf(stderr, "out [%s] olen:[%d]\n", out, olen);
             /* olen == 1 : [      1] */
             if (olen > 1) {
-                replace_result(out, olen, start, 0, out - start);
+                replace_result(out, olen, start, 0, out - start, rule_ids, rule_hits, rule_size);
             }
 
             start = pos + i + 1;
@@ -167,7 +171,7 @@ static  int process_and_or_opr(char *data, int dlen)
     return 0;
 }
 
-static int process_not_opr(char *data, int dlen)
+static int process_not_opr(char *data, int dlen, int *rule_ids, int *rule_hits, int rule_size)
 {
     int rule_id;
     char *opr;
@@ -206,7 +210,7 @@ static int process_not_opr(char *data, int dlen)
         olen = get_not_opr_len(start, dlen - i, &out);
         if (olen > 0) {
             printf("before data:[%.*s]\n", dlen, data);
-            replace_result(out, olen, start, 1, out - start);
+            replace_result(out, olen, start, 1, out - start, rule_ids, rule_hits, rule_size);
             printf("after  data:[%.*s]\n", dlen, data);
         }
     }
@@ -232,7 +236,7 @@ static get_exps_result(int exp1, int exp2, char opt)
  * @dlen:  data length
  * RETURN: [ 0 ]
  * */
-static int process_and_or_opt_result(char *data, int dlen)
+static int process_and_or_opt_result(char *data, int dlen, int *rule_ids, int *rule_hits, size_t rule_size)
 {
     int i, j, k;
     int sum = 1;
@@ -311,15 +315,21 @@ static int process_and_or_opt_result(char *data, int dlen)
     return 0;
 }
 
-int exp_parser_parse(char *data, int dlen)
+int exp_parser_parse(char *data, int dlen, int *rule_ids, int *rule_hits, size_t rule_size)
 {
+    if (data == NULL || dlen == 0 || rule_ids == NULL ||
+            rule_hits == NULL || rule_size == 0) {
+        fprintf(stderr, "%s:%d input error!", __func__, __LINE__);
+        return -1;
+    }
+
     /* process not opr */
-    process_not_opr(data, dlen);
+    process_not_opr(data, dlen, rule_ids, rule_hits, rule_size);
 
     /* process 'and opr' && 'or opt' */
-    process_and_or_opr(data, dlen);
+    process_and_or_opr(data, dlen, rule_ids, rule_hits, rule_size);
 
-    process_and_or_opt_result(data, dlen);
+    process_and_or_opt_result(data, dlen, rule_ids, rule_hits, rule_size);
 
     return 0;
 }

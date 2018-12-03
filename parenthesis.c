@@ -72,15 +72,19 @@ int clearstack (sqstack_t * s)
     return OK;
 }
 
-/* TODO ?  */
-static int calculate_exp_result(unsigned char *start, size_t slen)
+static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids, int *rule_hits, size_t rule_size)
 {
-    exp_parser_parse(start, slen);
-    return 0;
+    if (start == NULL || slen == 0 || rule_ids == NULL 
+            || rule_hits == NULL || rule_size == 0) {
+        fprintf(stderr, "Error %s:%d input error!\n", __func__, __LINE__);
+        return -1;
+    }
+
+    return exp_parser_parse(start, slen, rule_ids, rule_hits, rule_size);
 }
 
 //括号匹配算法
-int parenthesis_match (sqstack_t * s, unsigned char *str)
+int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size)
 {
     int i = 0, flag = 0;
     selement_t *e;
@@ -109,8 +113,16 @@ int parenthesis_match (sqstack_t * s, unsigned char *str)
                         char buff[BUFSIZ] = {0};
                         memcpy(buff, e->pos_s, e->pos_e - e->pos_s + 1);
                         fprintf(stderr, "before star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
-                        calculate_exp_result(e->pos_s + 1, e->pos_e - e->pos_s - 1);
-                        fprintf(stderr, "after star-end: %d-%d buff:[%s]\n\n", e->pos_s - str, e->pos_e - str, buff);
+                        calculate_exp_result(e->pos_s + 1, e->pos_e - e->pos_s - 1,
+                                rule_ids, rule_hits, rule_size);
+
+                        if (*e->pos_s == '(') {
+                            *e->pos_s = ' ';
+                        } 
+                        if (*e->pos_e == ')') {
+                            *e->pos_e = ' ';
+                        } 
+                        fprintf(stderr, "after star-end: %d-%d buff:[%.*s]\n\n", e->pos_s - str, e->pos_e - str, e->pos_e - e->pos_s + 1,e->pos_s);
                     }
                 }
                 break;
@@ -127,18 +139,5 @@ int parenthesis_match (sqstack_t * s, unsigned char *str)
     else
         printf ("括号匹配失败!\n");
     return OK;
-}
-
-static int waf_hit_result_find(waf_hit_t hits[10], int rule_id)
-{
-    int i;
-
-    for (i = 0; i< 10; i++) {
-        if (hits[i].rule_id == rule_id) {
-            return hits[i].hit;
-        }
-    }
-
-    return -1;
 }
 
