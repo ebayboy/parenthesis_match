@@ -10,12 +10,23 @@
 
 int parenthesis_init(sqstack_t * s)
 {
-    s->base = (selement_t *) malloc (STACK_INIT_SIZE * sizeof (selement_t*));
-    if (!s->base)
+    s->base = (selement_t *) malloc (STACK_INIT_SIZE * sizeof (selement_t));
+    if (!s->base) {
         exit (OVERFLOW);
+    }
     s->top = s->base;
     s->stacksize = STACK_INIT_SIZE;
     return OK;
+}
+
+void parenthesis_fini(sqstack_t * s)
+{
+    if (s->base == NULL) {
+        return ;
+    }
+
+    free(s->base);
+    s->base = NULL;
 }
 
 #if 0
@@ -41,18 +52,20 @@ int push (sqstack_t * s, selement_t *e)
         s->top = s->base + s->stacksize;
         s->stacksize += STACKINCREAMENT;
     }
-    *s->top++ = *e;
+    memcpy(s->top++, e, sizeof(selement_t));
+    //*s->top++ = *e;
 
     return OK;
 }
 
-int pop (sqstack_t * s, selement_t ** e)
+int pop (sqstack_t * s, selement_t * e)
 {
     if (s->top == s->base) {
         return ERROR;
     }
 
-    *e = --s->top;
+    memcpy(e, --s->top, sizeof(selement_t));
+    //*e = --s->top;
 
     return OK;
 }
@@ -66,9 +79,11 @@ int stackempty (sqstack_t * s)
 
 int clearstack (sqstack_t * s)
 {
-    if (s->top == s->base)
+    if (s->top == s->base) {
         return ERROR;
+    }
     s->top = s->base;
+
     return OK;
 }
 
@@ -87,7 +102,7 @@ static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids
 int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size)
 {
     int i = 0, flag = 0;
-    selement_t *e;
+    selement_t e;
 
     while (str[i] != '\0')
     {
@@ -95,34 +110,34 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
         {
             case '(':
                 /* e = new e */
-                if ((e = malloc(sizeof(selement_t))) == NULL) {
-                    return -1;
-                }
-                memset(e, 0, sizeof(selement_t));
-                e->e = '(';
-                e->pos_s = str + i;
-                push (s, e);
+                memset(&e, 0, sizeof(selement_t));
+                e.e = '(';
+                e.pos_s = str + i;
+                push (s, &e);
                 break;
             case ')':
                 {
+                    memset(&e, 0, sizeof(selement_t));
                     pop (s, &e);
-                    e->pos_e = str + i;
-                    if (e->e != '(') {
+
+                    e.pos_e = str + i;
+                    if (e.e != '(') {
                         flag = 1;
                     } else {
-                        char buff[BUFSIZ] = {0};
-                        memcpy(buff, e->pos_s, e->pos_e - e->pos_s + 1);
-                        fprintf(stderr, "before star-end: %d-%d buff:[%s]\n", e->pos_s - str, e->pos_e - str, buff);
-                        calculate_exp_result(e->pos_s + 1, e->pos_e - e->pos_s - 1,
+                        fprintf(stderr, "before star-end: %d-%d buff:[%.*s]\n", e.pos_s - str, e.pos_e - str,
+                                e.pos_e - e.pos_s + 1, e.pos_s);
+
+                        calculate_exp_result(e.pos_s + 1, e.pos_e - e.pos_s - 1,
                                 rule_ids, rule_hits, rule_size);
 
-                        if (*e->pos_s == '(') {
-                            *e->pos_s = ' ';
+                        if (*e.pos_s == '(') {
+                            *e.pos_s = ' ';
                         } 
-                        if (*e->pos_e == ')') {
-                            *e->pos_e = ' ';
+                        if (*e.pos_e == ')') {
+                            *e.pos_e = ' ';
                         } 
-                        fprintf(stderr, "after star-end: %d-%d buff:[%.*s]\n\n", e->pos_s - str, e->pos_e - str, e->pos_e - e->pos_s + 1,e->pos_s);
+                        fprintf(stderr, "after star-end: %d-%d buff:[%.*s]\n\n", e.pos_s - str, e.pos_e - str, 
+                                e.pos_e - e.pos_s + 1, e.pos_s);
                     }
                 }
                 break;
@@ -138,6 +153,7 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
         printf ("括号匹配成功!\n");
     else
         printf ("括号匹配失败!\n");
+
     return OK;
 }
 

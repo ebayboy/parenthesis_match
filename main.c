@@ -59,7 +59,9 @@ int main (int argc, char **argv)
     int rule_hits[10] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 
     sqstack_t s;
-    parenthesis_init (&s);
+    memset(&s, 0, sizeof(s));
+
+    parenthesis_init(&s);
 
     int i;
     for (i = 0; i < rule_size; i++) {
@@ -73,7 +75,9 @@ int main (int argc, char **argv)
 
     printf("buf:[%s] len:[%d]\n", buf, buflen);
 
-    parenthesis_match (&s, buf, rule_ids, rule_hits, rule_size);
+    parenthesis_match(&s, buf, rule_ids, rule_hits, rule_size);
+
+    parenthesis_fini(&s);
 
 out:
     if (buf) {

@@ -32,6 +32,7 @@ typedef struct
 
 int parenthesis_init (sqstack_t * s);
 int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size);
+void parenthesis_fini(sqstack_t * s);
 
 #endif
 
