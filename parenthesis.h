@@ -11,6 +11,9 @@
 #define WAF_NOT_HIT     0
 #define WAF_HIT         1
 
+#define PSIS_MATCHED        1
+#define PSIS_NOT_MATCHED    0
+
 typedef struct {
     int rule_id;
     int hit;
@@ -31,7 +34,7 @@ typedef struct
 } sqstack_t;
 
 int parenthesis_init (sqstack_t * s);
-int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size);
+int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size, int *match_out);
 void parenthesis_fini(sqstack_t * s);
 
 #endif

@@ -99,10 +99,15 @@ static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids
 }
 
 //括号匹配算法
-int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size)
+int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size, int *matched_out)
 {
     int i = 0, flag = 0;
     selement_t e;
+
+    if (s == NULL || str == NULL || rule_ids == NULL 
+            || rule_hits == NULL || rule_size == 0 || matched_out == NULL) {
+        return -1;
+    }
 
     while (str[i] != '\0')
     {
@@ -149,10 +154,19 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
         i++;
     }
 
-    if (!flag && stackempty (s))
-        printf ("括号匹配成功!\n");
-    else
+    if (!flag && stackempty (s)) {
+        printf ("括号匹配成功! before buff:[%s]\n", str);
+        calculate_exp_result(str, strlen(str), rule_ids, rule_hits, rule_size);
+        printf ("括号匹配成功! after buff:[%s]\n", str);
+    } else {
         printf ("括号匹配失败!\n");
+    }
+
+    if (atoi(str)  == 1) {
+        *matched_out = PSIS_MATCHED;
+    } else {
+        *matched_out = PSIS_NOT_MATCHED;
+    }
 
     return OK;
 }

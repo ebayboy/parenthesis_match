@@ -58,6 +58,8 @@ int main (int argc, char **argv)
     int rule_ids[10] = {30000, 30001, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009};
     int rule_hits[10] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 
+    int matched = PSIS_NOT_MATCHED;
+
     sqstack_t s;
     memset(&s, 0, sizeof(s));
 
@@ -72,10 +74,13 @@ int main (int argc, char **argv)
         fprintf(stderr, "fread_file error!\n");
         return -1;
     }
+    if (buf[strlen(buf) - 1] == '\n') {
+        buf[strlen(buf) - 1] = '\0';
+    }
 
-    printf("buf:[%s] len:[%d]\n", buf, buflen);
-
-    parenthesis_match(&s, buf, rule_ids, rule_hits, rule_size);
+    printf("%s:%d before match buf:[%s] len:[%d]\n", __func__, __LINE__, buf, buflen);
+    parenthesis_match(&s, buf, rule_ids, rule_hits, rule_size, &matched);
+    printf("%s:%d after match buf:[%s] len:[%d] matched:[%d]\n", __func__, __LINE__, buf, buflen, matched);
 
     parenthesis_fini(&s);
 
