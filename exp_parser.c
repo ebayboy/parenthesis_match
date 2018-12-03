@@ -166,6 +166,13 @@ static  int process_and_or_opr(char *data, int dlen, int *rule_ids, int *rule_hi
             start = pos + i + 1;
         }
     }
+
+    /* 只有一个表达式的时候， 或者多个表达式替换最后一个表达式 */
+    get_and_or_opr_len(start, data + dlen - start, &out, &olen);
+    /* olen == 1 : [      1] */
+    if (olen > 1) {
+        replace_result(out, olen, start, 0, out - start, rule_ids, rule_hits, rule_size);
+    }   
     fprintf(stderr, "%s:%d after repalce:[%.*s]\n", __func__, __LINE__, dlen, data);
 
     return 0;
@@ -187,7 +194,7 @@ static int process_not_opr(char *data, int dlen, int *rule_ids, int *rule_hits, 
         return -1;
     }
 
-    fprintf(stderr, "%s:%d data:[%.*s] dlen:[%d]\n", __func__, __LINE__, dlen, data, dlen);
+    fprintf(stderr, "%s:%d before :[%.*s] dlen:[%d]\n", __func__, __LINE__, dlen, data, dlen);
 
     /* calculate ! */
     for (i = 0; i < dlen; i++) {
@@ -209,11 +216,12 @@ static int process_not_opr(char *data, int dlen, int *rule_ids, int *rule_hits, 
         out = NULL;
         olen = get_not_opr_len(start, dlen - i, &out);
         if (olen > 0) {
-            printf("before data:[%.*s]\n", dlen, data);
+            //printf("before data:[%.*s]\n", dlen, data);
             replace_result(out, olen, start, 1, out - start, rule_ids, rule_hits, rule_size);
-            printf("after  data:[%.*s]\n", dlen, data);
+            //printf("after  data:[%.*s]\n", dlen, data);
         }
     }
+    fprintf(stderr, "%s:%d after :[%.*s] dlen:[%d]\n", __func__, __LINE__, dlen, data, dlen);
 
     return 0;
 }
@@ -298,8 +306,9 @@ static int process_and_or_opt_result(char *data, int dlen, int *rule_ids, int *r
 
             sum = get_exps_result(exp1_num, exp2_num, *opr);
 
-            fprintf(stderr, "opr:[%c] exp1_num:[%d] exp2_num:[%d] sum:[%d]\n", 
-                    *opr, exp1_num, exp2_num, sum);
+#if 0
+            fprintf(stderr, "opr:[%c] exp1_num:[%d] exp2_num:[%d] sum:[%d]\n", *opr, exp1_num, exp2_num, sum);
+#endif
         }
     }
 
