@@ -4,7 +4,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "common.h"
 #include "parenthesis.h"
 #include "exp_parser.h"
 
@@ -12,11 +11,13 @@ int parenthesis_init(sqstack_t * s)
 {
     s->base = (selement_t *) malloc (STACK_INIT_SIZE * sizeof (selement_t));
     if (!s->base) {
-        exit (OVERFLOW);
+        return PSIS_ERROR;
     }
+
     s->top = s->base;
     s->stacksize = STACK_INIT_SIZE;
-    return OK;
+
+    return PSIS_OK;
 }
 
 void parenthesis_fini(sqstack_t * s)
@@ -29,62 +30,48 @@ void parenthesis_fini(sqstack_t * s)
     s->base = NULL;
 }
 
-#if 0
-//获取栈顶元素
-__attribute__((unused))
-int Gettop (sqstack_t * s, selement_t *e)
-{
-    if (s->top == s->base)
-        return ERROR;
-    e = *(s->top - 1);
-    return OK;
-}
-#endif
-
 int push (sqstack_t * s, selement_t *e)
 {
     if (s->top - s->base >= s->stacksize) {
         s->base = (selement_t *) realloc (s->base,
             (s->stacksize + STACKINCREAMENT) * sizeof (selement_t));
         if (!s->base) {
-            exit (OVERFLOW);
+            return PSIS_ERROR;
         }
         s->top = s->base + s->stacksize;
         s->stacksize += STACKINCREAMENT;
     }
     memcpy(s->top++, e, sizeof(selement_t));
-    //*s->top++ = *e;
 
-    return OK;
+    return PSIS_OK;
 }
 
 int pop (sqstack_t * s, selement_t * e)
 {
     if (s->top == s->base) {
-        return ERROR;
+        return PSIS_ERROR;
     }
 
     memcpy(e, --s->top, sizeof(selement_t));
-    //*e = --s->top;
 
-    return OK;
+    return PSIS_OK;
 }
 
 int stackempty (sqstack_t * s)
 {
     if (s->top == s->base)
-        return OK;
-    return ERROR;
+        return PSIS_OK;
+    return PSIS_ERROR;
 }
 
 int clearstack (sqstack_t * s)
 {
     if (s->top == s->base) {
-        return ERROR;
+        return PSIS_ERROR;
     }
     s->top = s->base;
 
-    return OK;
+    return PSIS_OK;
 }
 
 static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids, int *rule_hits, size_t rule_size)
@@ -168,6 +155,6 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
         *matched_out = PSIS_NOT_MATCHED;
     }
 
-    return OK;
+    return PSIS_OK;
 }
 

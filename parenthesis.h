@@ -4,12 +4,9 @@
 
 #define STACKINCREAMENT 10
 #define STACK_INIT_SIZE 100
-#define OVERFLOW -2
-#define OK 1
-#define ERROR 0
 
-#define WAF_NOT_HIT     0
-#define WAF_HIT         1
+#define PSIS_OK     0
+#define PSIS_ERROR -1
 
 #define PSIS_MATCHED        1
 #define PSIS_NOT_MATCHED    0
@@ -18,7 +15,6 @@ typedef struct {
     int rule_id;
     int hit;
 } waf_hit_t;
-
 
 typedef struct {
     unsigned char *pos_s;
