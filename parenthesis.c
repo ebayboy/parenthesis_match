@@ -74,7 +74,7 @@ int clearstack (sqstack_t * s)
     return PSIS_OK;
 }
 
-static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids, int *rule_hits, size_t rule_size)
+static int calculate_exp_result(char *start, size_t slen, int *rule_ids, int *rule_hits, size_t rule_size)
 {
     if (start == NULL || slen == 0 || rule_ids == NULL 
             || rule_hits == NULL || rule_size == 0) {
@@ -86,7 +86,7 @@ static int calculate_exp_result(unsigned char *start, size_t slen, int *rule_ids
 }
 
 //括号匹配算法
-int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size, int *matched_out)
+int parenthesis_match (sqstack_t * s, char *str, int *rule_ids, int *rule_hits, size_t rule_size, int *matched_out)
 {
     int i = 0, flag = 0;
     selement_t e;
@@ -116,8 +116,9 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
                     if (e.e != '(') {
                         flag = 1;
                     } else {
-                        fprintf(stderr, "before star-end: %d-%d buff:[%.*s]\n", e.pos_s - str, e.pos_e - str,
-                                e.pos_e - e.pos_s + 1, e.pos_s);
+                        fprintf(stderr, "before star-end: %d-%d buff:[%.*s]\n", 
+                                (int)(e.pos_s - str), (int)(e.pos_e - str),
+                                (int)(e.pos_e - e.pos_s + 1), e.pos_s);
 
                         calculate_exp_result(e.pos_s + 1, e.pos_e - e.pos_s - 1,
                                 rule_ids, rule_hits, rule_size);
@@ -128,8 +129,9 @@ int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *ru
                         if (*e.pos_e == ')') {
                             *e.pos_e = ' ';
                         } 
-                        fprintf(stderr, "after star-end: %d-%d buff:[%.*s]\n\n", e.pos_s - str, e.pos_e - str, 
-                                e.pos_e - e.pos_s + 1, e.pos_s);
+                        fprintf(stderr, "after star-end: %d-%d buff:[%.*s]\n\n", 
+                                (int)(e.pos_s - str), (int)(e.pos_e - str), 
+                                (int)(e.pos_e - e.pos_s + 1), e.pos_s);
                     }
                 }
                 break;

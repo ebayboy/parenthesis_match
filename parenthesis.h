@@ -17,8 +17,8 @@ typedef struct {
 } waf_hit_t;
 
 typedef struct {
-    unsigned char *pos_s;
-    unsigned char *pos_e;
+    char *pos_s;
+    char *pos_e;
     char e;
 } selement_t;
 
@@ -30,7 +30,7 @@ typedef struct
 } sqstack_t;
 
 int parenthesis_init (sqstack_t * s);
-int parenthesis_match (sqstack_t * s, unsigned char *str, int *rule_ids, int *rule_hits, int rule_size, int *match_out);
+int parenthesis_match (sqstack_t * s, char *str, int *rule_ids, int *rule_hits, size_t rule_size, int *matched_out);
 void parenthesis_fini(sqstack_t * s);
 
 #endif

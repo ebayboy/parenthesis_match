@@ -85,7 +85,7 @@ static int get_not_opr_len(char *in, int ilen, char **out)
 
 static int get_result_by_rule(int rule_id, int *rule_ids, int *rule_hits, size_t rule_size)
 {
-    int i;
+    unsigned int i;
 
     for (i = 0; i< rule_size; i++) {
         if (rule_ids[i] == rule_id) {
@@ -113,7 +113,8 @@ static int replace_result(
     if ((mmb = malloc(ilen)) == NULL) {
         return -1;
     }
-    memset(mmb, 0, sizeof(mmb));
+
+    memset(mmb, 0, ilen);
     memcpy(mmb, in, ilen);
 
     rule_result = get_result_by_rule(atoi(mmb), rule_ids, rule_hits, rule_size);
@@ -180,15 +181,10 @@ static  int process_and_or_opr(char *data, int dlen, int *rule_ids, int *rule_hi
 
 static int process_not_opr(char *data, int dlen, int *rule_ids, int *rule_hits, int rule_size)
 {
-    int rule_id;
-    char *opr;
-    int i;
-    int olen = 0;
-
+    int i, olen = 0;
     char *pos = data;
     char *start = NULL;
     char *out = NULL;
-    int rule_result = 0;
 
     if (data == NULL || dlen == 0) {
         return -1;
@@ -226,7 +222,7 @@ static int process_not_opr(char *data, int dlen, int *rule_ids, int *rule_hits, 
     return 0;
 }
 
-static get_exps_result(int exp1, int exp2, char opt)
+static int get_exps_result(int exp1, int exp2, char opt)
 {
     if (opt == '&') {
         return exp1 & exp2;
