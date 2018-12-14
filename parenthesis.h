@@ -5,8 +5,8 @@
 #define STACKINCREAMENT 10
 #define STACK_INIT_SIZE 100
 
-#define PSIS_OK     0
-#define PSIS_ERROR -1
+#define OK 1
+#define ERROR 0
 
 #define PSIS_MATCHED        1
 #define PSIS_NOT_MATCHED    0

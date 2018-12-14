@@ -122,6 +122,9 @@ static int replace_result(
     if (is_not) {
         /* start = !30002 */
         /* ilen + ! + offset */
+        if (ilen == 1) {
+            rule_result = atoi(mmb);
+        }
         snprintf(mmb_id, sizeof(mmb_id) - 1, "%*d", ilen + offset, !rule_result);
     } else {
         /* start =[ 30001 ]*/

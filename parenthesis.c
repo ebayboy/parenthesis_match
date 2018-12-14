@@ -11,13 +11,13 @@ int parenthesis_init(sqstack_t * s)
 {
     s->base = (selement_t *) malloc (STACK_INIT_SIZE * sizeof (selement_t));
     if (!s->base) {
-        return PSIS_ERROR;
+        return ERROR;
     }
 
     s->top = s->base;
     s->stacksize = STACK_INIT_SIZE;
 
-    return PSIS_OK;
+    return OK;
 }
 
 void parenthesis_fini(sqstack_t * s)
@@ -36,42 +36,42 @@ int push (sqstack_t * s, selement_t *e)
         s->base = (selement_t *) realloc (s->base,
             (s->stacksize + STACKINCREAMENT) * sizeof (selement_t));
         if (!s->base) {
-            return PSIS_ERROR;
+            return ERROR;
         }
         s->top = s->base + s->stacksize;
         s->stacksize += STACKINCREAMENT;
     }
     memcpy(s->top++, e, sizeof(selement_t));
 
-    return PSIS_OK;
+    return OK;
 }
 
 int pop (sqstack_t * s, selement_t * e)
 {
     if (s->top == s->base) {
-        return PSIS_ERROR;
+        return ERROR;
     }
 
     memcpy(e, --s->top, sizeof(selement_t));
 
-    return PSIS_OK;
+    return OK;
 }
 
 int stackempty (sqstack_t * s)
 {
     if (s->top == s->base)
-        return PSIS_OK;
-    return PSIS_ERROR;
+        return OK;
+    return ERROR;
 }
 
 int clearstack (sqstack_t * s)
 {
     if (s->top == s->base) {
-        return PSIS_ERROR;
+        return ERROR;
     }
     s->top = s->base;
 
-    return PSIS_OK;
+    return OK;
 }
 
 static int calculate_exp_result(char *start, size_t slen, int *rule_ids, int *rule_hits, size_t rule_size)
@@ -157,6 +157,6 @@ int parenthesis_match (sqstack_t * s, char *str, int *rule_ids, int *rule_hits, 
         *matched_out = PSIS_NOT_MATCHED;
     }
 
-    return PSIS_OK;
+    return OK;
 }
 

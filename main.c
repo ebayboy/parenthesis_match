@@ -55,8 +55,8 @@ int main (int argc, char **argv)
     unsigned char *buf = NULL;
     int buflen = 0;
     int rule_size = 10;
-    int rule_ids[10] = {30000, 30001, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009};
-    int rule_hits[10] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+    int rule_ids[10] = {40001, 40002, 40003};
+    int rule_hits[10] = {1, 1, 0};
 
     int matched = PSIS_NOT_MATCHED;
 
